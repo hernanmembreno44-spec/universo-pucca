@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Para Pucca ✨</title>
 
-    <!-- Cargamos la API oficial de YouTube -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-
     <style>
         * {
             box-sizing: border-box;
@@ -21,7 +18,8 @@
             height: 100%;
             overflow: hidden;
             background-color: #050510;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2094&auto=format&fit=crop');
+            /* Fondo de nebulosa corregido sin barcos */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2048&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -121,15 +119,15 @@
             transition: all 1.5s ease;
             opacity: 0.4;
             cursor: default;
-            pointer-events: none; /* Inactiva por defecto */
+            pointer-events: none; 
         }
 
-            .moon.active {
-                opacity: 1;
-                cursor: pointer;
-                pointer-events: auto; /* Se activa al leer los 3 */
-                animation: moonGlow 2.5s infinite alternate;
-            }
+        .moon.active {
+            opacity: 1;
+            cursor: pointer;
+            pointer-events: auto;
+            animation: moonGlow 2.5s infinite alternate;
+        }
 
         .orbit {
             position: absolute;
@@ -141,23 +139,9 @@
             pointer-events: none;
         }
 
-        .orbit-1 {
-            width: 45vmin;
-            height: 45vmin;
-            animation: spin 20s linear infinite;
-        }
-
-        .orbit-2 {
-            width: 65vmin;
-            height: 65vmin;
-            animation: spin 28s linear infinite reverse;
-        }
-
-        .orbit-3 {
-            width: 85vmin;
-            height: 85vmin;
-            animation: spin 40s linear infinite;
-        }
+        .orbit-1 { width: 45vmin; height: 45vmin; animation: spin 20s linear infinite; }
+        .orbit-2 { width: 65vmin; height: 65vmin; animation: spin 28s linear infinite reverse; }
+        .orbit-3 { width: 85vmin; height: 85vmin; animation: spin 40s linear infinite; }
 
         .asteroid-container {
             position: absolute;
@@ -177,19 +161,8 @@
             transform: translate(-50%, 0);
         }
 
-        .ast-2 {
-            border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
-            width: 25px;
-            height: 35px;
-            background: #666;
-        }
-
-        .ast-3 {
-            border-radius: 50% 60% 70% 30% / 60% 40% 50% 50%;
-            width: 35px;
-            height: 30px;
-            background: #444;
-        }
+        .ast-2 { border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; width: 25px; height: 35px; background: #666; }
+        .ast-3 { border-radius: 50% 60% 70% 30% / 60% 40% 50% 50%; width: 35px; height: 30px; background: #444; }
 
         .asteroid.read {
             background: #9d4edd;
@@ -218,12 +191,12 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
 
-            #modal.show {
-                opacity: 1;
-                visibility: visible;
-                pointer-events: auto;
-                transform: translate(-50%, -50%) scale(1);
-            }
+        #modal.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
 
         #modal-text {
             font-size: 1.1rem;
@@ -243,108 +216,44 @@
             transition: background 0.2s;
         }
 
-            .close-btn:active {
-                background: rgba(255,255,255,0.3);
-            }
+        .close-btn:active { background: rgba(255,255,255,0.3); }
 
-        @keyframes spin {
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        @keyframes pulseBtn {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-
-            50% {
-                transform: scale(1.05);
-                opacity: 1;
-            }
-        }
-
-        @keyframes moonGlow {
-            from {
-                box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(168, 85, 247, 0.3);
-            }
-
-            to {
-                box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 80px rgba(212, 165, 255, 1);
-            }
-        }
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes pulseBtn { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes moonGlow { from { box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(168, 85, 247, 0.3); } to { box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 80px rgba(212, 165, 255, 1); } }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla de Bienvenida -->
+    <!-- Audio nativo y a prueba de fallos -->
+    <audio id="bg-music" src="cancion.mp3" loop></audio>
+
     <div id="start-screen" onclick="startApp()">
         <div class="start-btn">Toca para viajar ✨</div>
-        <div id="audio-status">Cargando música...</div>
+        <div id="audio-status">Listo para iniciar</div>
     </div>
 
-    <!-- Contenedor para la API de YouTube -->
-    <div style="position: absolute; top: -9999px; left: -9999px;">
-        <div id="youtube-player"></div>
-    </div>
-
-    <!-- Textos superpuestos -->
     <div id="instructions">Toca los asteroides flotantes...</div>
     <div id="moon-indicator">✨ ¡La luna ha despertado! Tócala ✨</div>
 
-    <!-- Lienzo del Espacio -->
     <div id="universe">
-        <div class="orbit orbit-1">
-            <div class="asteroid-container"><div class="asteroid" onclick="clickAsteroid(0, this)"></div></div>
-        </div>
-        <div class="orbit orbit-2">
-            <div class="asteroid-container"><div class="asteroid ast-2" onclick="clickAsteroid(1, this)"></div></div>
-        </div>
-        <div class="orbit orbit-3">
-            <div class="asteroid-container"><div class="asteroid ast-3" onclick="clickAsteroid(2, this)"></div></div>
-        </div>
-
+        <div class="orbit orbit-1"><div class="asteroid-container"><div class="asteroid" onclick="clickAsteroid(0, this)"></div></div></div>
+        <div class="orbit orbit-2"><div class="asteroid-container"><div class="asteroid ast-2" onclick="clickAsteroid(1, this)"></div></div></div>
+        <div class="orbit orbit-3"><div class="asteroid-container"><div class="asteroid ast-3" onclick="clickAsteroid(2, this)"></div></div></div>
         <div class="moon" id="main-moon" onclick="clickMoon()"></div>
     </div>
 
-    <!-- Modal de Mensajes -->
     <div id="modal">
         <div id="modal-text"></div>
         <button class="close-btn" onclick="closeModal()">Continuar</button>
     </div>
 
     <script>
-        let ytPlayer;
-        let isPlayerReady = false;
-
-        // Función que YouTube llama automáticamente cuando su código termina de cargar
-        function onYouTubeIframeAPIReady() {
-        ytPlayer = new YT.Player('youtube-player', {
-        height: '10',
-        width: '10',
-        videoId: 'NxqBEfQWLUg',
-        playerVars: {
-        'autoplay': 0,
-        'controls': 0,
-        'loop': 1,
-        'playlist': 'NxqBEfQWLUg' // Necesario para que el loop funcione
-        },
-        events: {
-        'onReady': function(event) {
-        isPlayerReady = true;
-        document.getElementById('audio-status').innerText = "(Con sonido activado)";
-        }
-        }
-        });
-        }
-
         const messages = [
-        "¡Felices 18! No puedo creer lo rápido que pasa el tiempo. Hoy celebro no solo tu cumpleaños, sino la increíble persona en la que te has convertido.",
-        "Hemos pasado por tantas cosas juntos, momentos fáciles y otros bastante difíciles, pero siempre hemos estado ahí el uno para el otro. Eso es lo que nos hace inseparables (Y eso que te desapareciste un buen -.-).",
-        "Quiero que sepas lo inmensamente orgulloso que estoy de ti. Eres fuerte, eres valiente y sé que vas a conquistar el mundo ahora que eres oficialmente adulta (aunque para mí siempre serás mi pequeña pucca)."
+            "¡Felices 18! No puedo creer lo rápido que pasa el tiempo. Hoy celebro no solo tu cumpleaños, sino la increíble persona en la que te has convertido.",
+            "Hemos pasado por tantas cosas juntos, momentos fáciles y otros bastante difíciles, pero siempre hemos estado ahí el uno para el otro. Eso es lo que nos hace inseparables (Y eso que te desapareciste un buen -.-).",
+            "Quiero que sepas lo inmensamente orgulloso que estoy de ti. Eres fuerte, eres valiente y sé que vas a conquistar el mundo ahora que eres oficialmente adulta (aunque para mí siempre serás mi pequeña pucca)."
         ];
-
         const finalMessage = "Eres como esta luna: aunque a veces haya oscuridad a tu alrededor, siempre encuentras la forma de brillar. Gracias por ser mi mejor amiga. ¡Feliz cumpleaños Pucca!";
 
         let appStarted = false;
@@ -352,65 +261,58 @@
         let readStatus = [false, false, false];
         let moonIsActive = false;
 
-        // Iniciar app y forzar la música al interactuar con la pantalla
         function startApp() {
-        if(appStarted) return;
+            if(appStarted) return;
+            
+            // Inicia la reproducción del MP3 local
+            document.getElementById('bg-music').play();
 
-        // Intentamos reproducir usando la API oficial
-        if(isPlayerReady) {
-        ytPlayer.playVideo();
-        } else {
-        // Si tardó en cargar, lo intentamos un poco después
-        setTimeout(() => { if(isPlayerReady) ytPlayer.playVideo(); }, 1500);
-        }
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.visibility = 'hidden';
+                startScreen.style.display = 'none';
+            }, 1000);
 
-        const startScreen = document.getElementById('start-screen');
-        startScreen.style.opacity = '0';
-        setTimeout(() => {
-        startScreen.style.visibility = 'hidden';
-        startScreen.style.display = 'none';
-        }, 1000);
-
-        appStarted = true;
+            appStarted = true;
         }
 
         function clickAsteroid(index, element) {
-        document.getElementById('modal-text').innerText = messages[index];
-        document.getElementById('modal').classList.add('show');
+            document.getElementById('modal-text').innerText = messages[index];
+            document.getElementById('modal').classList.add('show');
 
-        if (!readStatus[index]) {
-        readStatus[index] = true;
-        element.classList.add('read');
-        asteroidsReadCount++;
-        checkMoonActivation();
-        }
+            if (!readStatus[index]) {
+                readStatus[index] = true;
+                element.classList.add('read');
+                asteroidsReadCount++;
+                checkMoonActivation();
+            }
         }
 
         function checkMoonActivation() {
-        if (asteroidsReadCount === 3 && !moonIsActive) {
-        moonIsActive = true;
+            if (asteroidsReadCount === 3 && !moonIsActive) {
+                moonIsActive = true;
+                document.getElementById('instructions').style.opacity = '0';
+                document.getElementById('main-moon').classList.add('active');
 
-        document.getElementById('instructions').style.opacity = '0';
-        document.getElementById('main-moon').classList.add('active');
-
-        setTimeout(() => {
-        const indicator = document.getElementById('moon-indicator');
-        indicator.style.visibility = 'visible';
-        indicator.style.opacity = '1';
-        }, 1000);
-        }
+                setTimeout(() => {
+                    const indicator = document.getElementById('moon-indicator');
+                    indicator.style.visibility = 'visible';
+                    indicator.style.opacity = '1';
+                }, 1000);
+            }
         }
 
         function clickMoon() {
-        if (moonIsActive) {
-        const modalText = document.getElementById('modal-text');
-        modalText.innerHTML = `<span style="font-weight: bold; font-size: 1.15rem; color: #fff;">${finalMessage}</span>`;
-        document.getElementById('modal').classList.add('show');
-        }
+            if (moonIsActive) {
+                const modalText = document.getElementById('modal-text');
+                modalText.innerHTML = `<span style="font-weight: bold; font-size: 1.15rem; color: #fff;">${finalMessage}</span>`;
+                document.getElementById('modal').classList.add('show');
+            }
         }
 
         function closeModal() {
-        document.getElementById('modal').classList.remove('show');
+            document.getElementById('modal').classList.remove('show');
         }
     </script>
 </body>
