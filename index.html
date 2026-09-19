@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Pucca ✨</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body, html {
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden;
+            background-color: #050510;
+            /* Fondo estricto con la imagen de Unsplash indicada y oscurecimiento */
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
+                url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2094&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            user-select: none;
+        }
+
+        /* Pantalla de Inicio */
+        #start-screen {
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); 
+            backdrop-filter: blur(8px);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 100; 
+            cursor: pointer; 
+            transition: opacity 1s, visibility 1s;
+        }
+        
+        .start-btn {
+            padding: 15px 35px; 
+            font-size: 1.3rem; 
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            animation: pulseBtn 2s infinite;
+            text-align: center;
+        }
+
+        /* Textos de Instrucción */
+        #instructions {
+            position: absolute; 
+            top: 8%; 
+            width: 100%; 
+            text-align: center;
+            font-size: 1.2rem; 
+            font-style: italic; 
+            opacity: 0.9;
+            z-index: 10; 
+            pointer-events: none; 
+            transition: opacity 0.8s ease;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #moon-indicator {
+            position: absolute; 
+            bottom: 12%; 
+            width: 100%; 
+            text-align: center;
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            color: #d4a5ff;
+            /* CRÍTICO: Completamente oculto al inicio */
+            opacity: 0; 
+            visibility: hidden;
+            z-index: 10; 
+            pointer-events: none; 
+            transition: opacity 1.5s ease, visibility 1.5s;
+            text-shadow: 0 0 15px rgba(212, 165, 255, 0.9);
+            animation: pulseBtn 2s infinite;
+        }
+
+        #universe {
+            position: relative; 
+            width: 100%; 
+            height: 100%;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+        }
+        
+        .moon {
+            /* Uso de vmin para que no se desborde en pantallas pequeñas */
+            width: 25vmin; 
+            height: 25vmin; 
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 50%;
+            background-color: #ddd; /* Fallback */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            background-size: cover;
+            background-position: center;
+            /* Sombra interior suave en 3D (volumen), empieza opaca */
+            box-shadow: inset -15px -15px 30px rgba(0,0,0,0.85);
+            z-index: 5; 
+            transition: all 1.5s ease; 
+            opacity: 0.4;
+            cursor: default;
+        }
+        
+        .moon.active {
+            opacity: 1; 
+            cursor: pointer;
+            animation: moonGlow 2.5s infinite alternate;
+        }
+
+        .orbit {
+            position: absolute; 
+            border-radius: 50%;
+            border: 1px dashed rgba(255,255,255,0.15);
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
+        /* Órbitas proporcionales a la pantalla */
+        .orbit-1 { width: 45vmin; height: 45vmin; animation: spin 20s linear infinite; }
+        .orbit-2 { width: 65vmin; height: 65vmin; animation: spin 28s linear infinite reverse; }
+        .orbit-3 { width: 85vmin; height: 85vmin; animation: spin 40s linear infinite; }
+
+        .asteroid-container {
+            position: absolute; 
+            top: -15px; 
+            left: 50%;
+            pointer-events: auto;
+        }
+
+        /* Asteroides de roca irregulares en CSS puro */
+        .asteroid {
+            width: 30px; 
+            height: 30px; 
+            background: #555;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8), inset 2px 2px 5px rgba(255,255,255,0.3);
+            cursor: pointer; 
+            transition: all 0.4s;
+            transform: translate(-50%, 0);
+        }
+        
+        /* Formas diferentes para cada roca */
+        .ast-2 { border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; width: 25px; height: 35px; background: #666; }
+        .ast-3 { border-radius: 50% 60% 70% 30% / 60% 40% 50% 50%; width: 35px; height: 30px; background: #444; }
+
+        /* Efecto cuando ya se leyó el asteroide */
+        .asteroid.read { 
+            background: #9d4edd; 
+            box-shadow: 0 0 15px #e0aaff, inset -5px -5px 10px rgba(0,0,0,0.6); 
+        }
+
+        #modal {
+            position: absolute; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 88%; 
+            max-width: 400px; 
+            padding: 30px 25px; 
+            border-radius: 20px;
+            /* Glassmorphism real */
+            background: rgba(20, 10, 40, 0.6); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2); 
+            text-align: center;
+            opacity: 0; 
+            visibility: hidden;
+            pointer-events: none; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 50;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        
+        #modal.show { 
+            opacity: 1; 
+            visibility: visible;
+            pointer-events: auto; 
+            transform: translate(-50%, -50%) scale(1); 
+        }
+        
+        #modal-text { 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            margin-bottom: 25px; 
+            color: #f8f9fa;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 25px;
+            border-radius: 20px; 
+            color: white; 
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .close-btn:active { background: rgba(255,255,255,0.3); }
+
+        /* Animaciones Clave */
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes pulseBtn { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes moonGlow { 
+            from { box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(168, 85, 247, 0.3); } 
+            to { box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 0 0 80px rgba(212, 165, 255, 1); } 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Bienvenida -->
+    <div id="start-screen" onclick="startApp()">
+        <div class="start-btn">Toca para viajar ✨</div>
+    </div>
+
+    <!-- Reproductor de YouTube 100% oculto -->
+    <div style="position: absolute; top: -9999px; left: -9999px;">
+        <iframe id="youtube-player" width="10" height="10" src="https://www.youtube.com/embed/NxqBEfQWLUg?enablejsapi=1&autoplay=0&loop=1&playlist=NxqBEfQWLUg" frameborder="0" allow="autoplay"></iframe>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="instructions">Toca los asteroides flotantes...</div>
+    <div id="moon-indicator">✨ ¡La luna ha despertado! Tócala ✨</div>
+
+    <!-- Lienzo del Espacio -->
+    <div id="universe">
+        <div class="orbit orbit-1">
+            <div class="asteroid-container"><div class="asteroid" onclick="clickAsteroid(0, this)"></div></div>
+        </div>
+        <div class="orbit orbit-2">
+            <div class="asteroid-container"><div class="asteroid ast-2" onclick="clickAsteroid(1, this)"></div></div>
+        </div>
+        <div class="orbit orbit-3">
+            <div class="asteroid-container"><div class="asteroid ast-3" onclick="clickAsteroid(2, this)"></div></div>
+        </div>
+        
+        <div class="moon" id="main-moon" onclick="clickMoon()"></div>
+    </div>
+
+    <!-- Modal de Mensajes -->
+    <div id="modal">
+        <div id="modal-text"></div>
+        <button class="close-btn" onclick="closeModal()">Continuar</button>
+    </div>
+
+    <script>
+        // Los mensajes exactos provistos
+        const messages = [
+            "¡Felices 18! No puedo creer lo rápido que pasa el tiempo. Hoy celebro no solo tu cumpleaños, sino la increíble persona en la que te has convertido.",
+            "Hemos pasado por tantas cosas juntos, momentos fáciles y otros bastante difíciles, pero siempre hemos estado ahí el uno para el otro. Eso es lo que nos hace inseparables (Y eso que te desapareciste un buen -.-).",
+            "Quiero que sepas lo inmensamente orgulloso que estoy de ti. Eres fuerte, eres valiente y sé que vas a conquistar el mundo ahora que eres oficialmente adulta (aunque para mí siempre serás mi pequeña pucca)."
+        ];
+        
+        const finalMessage = "Eres como esta luna: aunque a veces haya oscuridad a tu alrededor, siempre encuentras la forma de brillar. Gracias por ser mi mejor amiga. ¡Feliz cumpleaños Pucca!";
+
+        // Estado estricto de la aplicación
+        let appStarted = false;
+        let asteroidsReadCount = 0;
+        let readStatus = [false, false, false];
+        let moonIsActive = false;
+
+        // Iniciar app, ocultar overlay y reproducir música
+        function startApp() {
+            if(appStarted) return;
+            
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+            setTimeout(() => {
+                startScreen.style.visibility = 'hidden';
+                startScreen.style.display = 'none';
+            }, 1000);
+            
+            // Activar YouTube mediante API de postMessage
+            const player = document.getElementById('youtube-player').contentWindow;
+            player.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            
+            appStarted = true;
+        }
+
+        // Lógica al tocar un asteroide
+        function clickAsteroid(index, element) {
+            // Mostrar modal con el texto correspondiente
+            document.getElementById('modal-text').innerText = messages[index];
+            document.getElementById('modal').classList.add('show');
+            
+            // Si es la primera vez que se lee este asteroide
+            if (!readStatus[index]) {
+                readStatus[index] = true;
+                element.classList.add('read'); // Cambia color
+                asteroidsReadCount++;
+                
+                // Evaluar si ya se leyeron todos
+                checkMoonActivation();
+            }
+        }
+
+        // Validación estricta para despertar la luna
+        function checkMoonActivation() {
+            if (asteroidsReadCount === 3 && !moonIsActive) {
+                moonIsActive = true;
+                
+                // 1. Ocultar instrucciones superiores
+                document.getElementById('instructions').style.opacity = '0';
+                
+                // 2. Despertar la Luna (cambia opacidad y brilla)
+                document.getElementById('main-moon').classList.add('active');
+                
+                // 3. Mostrar mensaje inferior con un retraso elegante
+                setTimeout(() => {
+                    const indicator = document.getElementById('moon-indicator');
+                    indicator.style.visibility = 'visible';
+                    indicator.style.opacity = '1';
+                }, 1000);
+            }
+        }
+
+        // Lógica al tocar la luna
+        function clickMoon() {
+            // Solo funciona si la luna está activa (los 3 asteroides leídos)
+            if (moonIsActive) {
+                const modalText = document.getElementById('modal-text');
+                // Formato final en negritas
+                modalText.innerHTML = `<span style="font-weight: bold; font-size: 1.15rem; color: #fff;">${finalMessage}</span>`;
+                document.getElementById('modal').classList.add('show');
+            }
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
